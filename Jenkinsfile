@@ -37,11 +37,6 @@ pipeline {
             steps {
                     checkout scm
                     bat 'npm install .'
-
-                    script {
-                        // load user properties
-                        properties = readProperties file: 'user.properties'
-                }
             }
         }
         

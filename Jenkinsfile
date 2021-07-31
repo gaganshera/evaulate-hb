@@ -9,6 +9,11 @@ pipeline {
         masterAppPort = 7200
         developAppPort = 7300
         dockerPort = 7100
+        projectId = 'devopsassignment'
+        clusterName = 'node-app'
+        location = 'us-central1-c'
+        credentialsId = 'DevOpsAssignment'
+        namespace = 'kubernetes-cluster-himanshubungla'
     }
     
     tools {
@@ -85,9 +90,11 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
+                        bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:latest"
                         
                         withDockerRegistry([credentialsId: 'DockerHub', url: '']) {
                             bat "docker push ${dockerRegistry}:${BUILD_NUMBER}"
+                            bat "docker push ${dockerRegistry}:latest"
                         }
                     }
                 }
@@ -111,6 +118,7 @@ pipeline {
         stage('Kubernetes Deployment') {
             steps {
                 echo "Kubernetes Deployment"
+                step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
             }
         }
     }

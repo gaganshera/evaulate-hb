@@ -3,7 +3,7 @@ var router = express.Router();
 const fs = require('fs');
 
 /* status check */
-router.get('/user', function (req, res, next) {
+router.get(['', '/user'], function (req, res, next) {
   res.json({"status": "running"});
 });
 

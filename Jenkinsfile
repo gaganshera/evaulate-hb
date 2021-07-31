@@ -9,6 +9,10 @@ pipeline {
         masterAppPort = 7200
         developAppPort = 7300
         dockerPort = 7100
+        projectId = 'devopsassignment'
+        clusterName = 'node-app'
+        location = 'us-central1-c'
+        credentialsId = 'DevOpsAssignment'
     }
     
     tools {
@@ -113,6 +117,7 @@ pipeline {
         stage('Kubernetes Deployment') {
             steps {
                 echo "Kubernetes Deployment"
+                step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
             }
         }
     }

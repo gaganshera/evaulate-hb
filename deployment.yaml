@@ -16,13 +16,13 @@ spec:
         app: node-app
     spec:
       containers:
-        - name: node-app
-          image: himanshusb12/app_himanshubungla:latest
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-
+      - name: node-app
+        image: himanshusb12/app_himanshubungla:latest
+        ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+---
 apiVersion: v1
 kind: Service
 metadata:

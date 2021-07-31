@@ -13,6 +13,7 @@ pipeline {
         clusterName = 'node-app'
         location = 'us-central1-c'
         credentialsId = 'DevOpsAssignment'
+        namespace = 'kubernetes-cluster-himanshubungla'
     }
     
     tools {
@@ -117,7 +118,7 @@ pipeline {
         stage('Kubernetes Deployment') {
             steps {
                 echo "Kubernetes Deployment"
-                step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
+                step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
             }
         }
     }

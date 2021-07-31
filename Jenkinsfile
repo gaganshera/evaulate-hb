@@ -85,9 +85,11 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
+                        bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:latest"
                         
                         withDockerRegistry([credentialsId: 'DockerHub', url: '']) {
                             bat "docker push ${dockerRegistry}:${BUILD_NUMBER}"
+                            bat "docker push ${dockerRegistry}:latest"
                         }
                     }
                 }

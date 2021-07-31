@@ -32,10 +32,11 @@ pipeline {
         
     }
     
-    stages {
-        stage('Start') {
+    stages {        
+        stage('Build') {
             steps {
-                checkout scm
+                    checkout scm
+                    bat 'npm install .'
             }
             script {
                 // load user properties
@@ -43,30 +44,30 @@ pipeline {
             }
         }
         
-        stage('Build') {
-            steps {
-                   bat 'npm install .'
-                }
-        }
-        
         stage('Unit Testing') {
+            when {
+                branch 'master'
+            }
             steps {
                    bat 'npm test'
                 
-                }
+            }
+        }
+        
+        stage('Sonar Analysis') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                    withSonarQubeEnv('Test_Sonar') {
+                    bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonar-himanshubungla -Dsonar.projectName=sonar-himanshubungla -Dsonar.language=js -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=tests/** -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info"
+                } 
+            }
         }
 
         stage('Docker image') {
             steps {
                 bat "docker build . -t i-${username}-master"
-            }
-        }
-        
-        stage('Sonar Analysis') {
-            steps {
-                    withSonarQubeEnv('Test_Sonar') {
-                    bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonar-himanshubungla -Dsonar.projectName=sonar-himanshubungla -Dsonar.language=js -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=tests/** -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info"
-                } 
             }
         }
 

@@ -6,8 +6,8 @@ pipeline {
         scannerHome = tool name: 'SonarQubeScanner'
         username = 'himanshubungla'
         dockerRegistry = 'himanshusb12/app_himanshubungla'
-        appPort = 7100
-        dockerPort = 7100
+        appPort = 7200
+        dockerPort = 7200
     }
     
     tools {

@@ -101,7 +101,7 @@ pipeline {
                     if (env.BRANCH_NAME == 'master') {
                         bat "docker run --name c-${username}-${env.BRANCH_NAME} -p ${masterAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"    
                     }
-                    else if (env.BRANCH_NAME == 'develo') {
+                    else if (env.BRANCH_NAME == 'develop') {
                         bat "docker run --name c-${username}-${env.BRANCH_NAME} -p ${developAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"
                     }
                 }

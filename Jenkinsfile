@@ -6,8 +6,9 @@ pipeline {
         scannerHome = tool name: 'SonarQubeScanner'
         username = 'himanshubungla'
         dockerRegistry = 'himanshusb12/app_himanshubungla'
-        appPort = 7300
-        dockerPort = 7300
+        masterAppPort = 7200
+        developAppPort = 7300
+        dockerPort = 7100
     }
     
     tools {
@@ -63,7 +64,7 @@ pipeline {
 
         stage('Docker image') {
             steps {
-                bat "docker build . -t i-${username}-master"
+                bat "docker build . -t i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER}"
             }
         }
 
@@ -72,18 +73,18 @@ pipeline {
                 stage('Pre-Container Check') {
                     when {
                         expression {
-                            return bat (script: "docker port c-${username}-master", returnStatus: true) == 0;
+                            return bat (script: "docker port c-${username}-${env.BRANCH_NAME}", returnStatus: true) == 0;
                         }
                     }
                     steps {
                         echo 'Stopping the already running container'
-                        bat "docker rm -f c-${username}-master"
+                        bat "docker rm -f c-${username}-${env.BRANCH_NAME}"
                     }
                 }
 
                 stage('Publish to Docker Hub') {
                     steps {
-                        bat "docker tag i-${username}-master ${dockerRegistry}:${BUILD_NUMBER}"
+                        bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
                         
                         withDockerRegistry([credentialsId: 'DockerHub', url: '']) {
                             bat "docker push ${dockerRegistry}:${BUILD_NUMBER}"
@@ -95,8 +96,15 @@ pipeline {
 
         stage('Docker deployment') {
             steps {
-                echo 'Starting the api container'
-                bat "docker run --name c-${username}-master -p ${appPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"
+                script {
+                    echo 'Starting the api container'
+                    if (env.BRANCH_NAME == 'master') {
+                        bat "docker run --name c-${username}-${env.BRANCH_NAME} -p ${masterAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"    
+                    }
+                    else if (env.BRANCH_NAME == 'develo') {
+                        bat "docker run --name c-${username}-${env.BRANCH_NAME} -p ${developAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"
+                    }
+                }
             }
         }
 

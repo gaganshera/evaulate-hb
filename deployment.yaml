@@ -20,7 +20,7 @@ spec:
         image: himanshusb12/app_himanshubungla:latest
         ports:
           - name: http
-            containerPort: 80
+            containerPort: 7100
             protocol: TCP
 ---
 apiVersion: v1
@@ -36,4 +36,4 @@ spec:
     - protocol: TCP
       nodePort: 30157
       port: 80
-      targetPort: 80
+      targetPort: 7100

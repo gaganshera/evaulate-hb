@@ -61,6 +61,8 @@ pipeline {
                 branch 'develop'
             }
             steps {
+                    bat 'npm test'
+
                     withSonarQubeEnv('Test_Sonar') {
                     bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonar-himanshubungla -Dsonar.projectName=sonar-himanshubungla -Dsonar.language=js -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=tests/** -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info"
                 } 

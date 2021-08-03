@@ -14,6 +14,12 @@ pipeline {
         location = 'us-central1-c'
         credentialsId = 'DevOpsAssignment'
         namespace = 'kubernetes-cluster-himanshubungla'
+        masterAppName = 'node-app-master-deployment'
+        masterServiceName = 'node-app-master'
+        masterExposedPort = 30157
+        developAppName = 'node-app-develop-deployment'
+        developServiceName = 'node-app-develop'
+        developExposedPort = 30158
     }
     
     tools {
@@ -62,7 +68,7 @@ pipeline {
             }
             steps {
                     bat 'npm test'
-
+                    
                     withSonarQubeEnv('Test_Sonar') {
                     bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonar-himanshubungla -Dsonar.projectName=sonar-himanshubungla -Dsonar.language=js -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=tests/** -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info"
                 } 
@@ -119,8 +125,18 @@ pipeline {
 
         stage('Kubernetes Deployment') {
             steps {
-                echo "Kubernetes Deployment"
-                step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
+                script {
+                    echo "Kubernetes Deployment"
+                    if (env.BRANCH_NAME == 'master') {
+                        powershell "(get-content deployment-template.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$masterAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$masterServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$masterExposedPort\"} | set-content deployment-template.yaml"
+                    } 
+                    else if (env.BRANCH_NAME == 'develop') {
+                        powershell "get-content deployment-template.yaml | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment-template.yaml"
+                    }
+                
+                    step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment-template.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
+                }
+                
             }
         }
     }

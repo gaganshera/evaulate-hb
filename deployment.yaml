@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-app-develop-deployment
+  name: <APP_NAME>
   namespace: kubernetes-cluster-himanshubungla
   labels:
     app: node-app
@@ -26,7 +26,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: node-app-develop
+  name: <SERVICE_NAME>
   namespace: kubernetes-cluster-himanshubungla
 spec:
   type: NodePort
@@ -34,6 +34,6 @@ spec:
     app: node-app
   ports:
     - protocol: TCP
-      nodePort: 30158
+      nodePort: <EXPOSED_PORT>
       port: 80
       targetPort: 7100

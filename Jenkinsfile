@@ -131,7 +131,7 @@ pipeline {
                         powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$masterAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$masterServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$masterExposedPort\"} | set-content deployment.yaml"
                     } 
                     else if (env.BRANCH_NAME == 'develop') {
-                        powershell "get-content deployment.yaml | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment.yaml"
+                        powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment.yaml"
                     }
                 
                     step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])

@@ -120,6 +120,7 @@ pipeline {
         stage('Kubernetes Deployment') {
             steps {
                 echo "Kubernetes Deployment"
+                powershell "get-content deployment-template.yaml | %{\$_ -replace \"%APP_NAME%\", \"$appName\"} | %{\$_ -replace \"%SERVICE_NAME%\", \"$serviceName\"} | %{\$_ -replace \"%EXPOSED_PORT%\", \"$exposedPort\"} > deployment.yaml"
                 step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
             }
         }

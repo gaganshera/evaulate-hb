@@ -128,13 +128,13 @@ pipeline {
                 script {
                     echo "Kubernetes Deployment"
                     if (env.BRANCH_NAME == 'master') {
-                        powershell "get-content deployment-template.yaml | %{\$_ -replace \"<APP_NAME>\", \"$masterAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$masterServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$masterExposedPort\"} > deployment.yaml"
+                        powershell "(get-content deployment-template.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$masterAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$masterServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$masterExposedPort\"} | set-content deployment-template.yaml"
                     } 
                     else if (env.BRANCH_NAME == 'develop') {
-                        powershell "get-content deployment-template.yaml | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} > deployment.yaml"
+                        powershell "get-content deployment-template.yaml | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment-template.yaml"
                     }
                 
-                    step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
+                    step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment-template.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
                 }
                 
             }

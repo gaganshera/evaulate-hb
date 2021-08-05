@@ -2,12 +2,12 @@ const { Unauthorized, NotFound } = require('http-errors');
 let request = require(`supertest`);
 let app = require('../app');
 
-describe('Status check response', function () {
-    it('should returns status as running', function(done) {
-        const expected_response = {"status": "running"};
-        request(app).get('/user').expect(expected_response).expect(200, done);
-    });
-});
+// describe('Status check response', function () {
+//     it('should returns status as running', function(done) {
+//         const expected_response = {"status": "running"};
+//         request(app).get('/user').expect(expected_response).expect(200, done);
+//     });
+// });
 
 describe('Get all users data', function () {
     it('should returns all users info', function(done) {

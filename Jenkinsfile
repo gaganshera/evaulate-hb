@@ -9,11 +9,6 @@ pipeline {
         masterAppPort = 7200
         developAppPort = 7300
         dockerPort = 7100
-        projectId = 'devopsassignment'
-        clusterName = 'node-app'
-        location = 'us-central1-c'
-        credentialsId = 'DevOpsAssignment'
-        namespace = 'kubernetes-cluster-himanshubungla'
         masterAppName = 'node-app-master-deployment'
         masterServiceName = 'node-app-master'
         masterExposedPort = 30157
@@ -134,7 +129,7 @@ pipeline {
                         powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment.yaml"
                     }
                 
-                    step([$class: 'KubernetesEngineBuilder', projectId: env.projectId, clusterName: env.clusterName, location: env.location, namespace: env.namespace, manifestPattern: 'deployment.yaml', credentialsId: env.credentialsId, verifyDeployments: true])
+                    bat "kubectl apply -f deployment.yaml" 
                 }
                 
             }

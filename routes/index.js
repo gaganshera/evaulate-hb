@@ -4,7 +4,8 @@ const fs = require('fs');
 
 /* status check */
 router.get(['', '/user'], function (req, res, next) {
-  res.json({"status": "running"});
+  // res.json({"status": "running"});
+  res.sendFile(__dirname + '/home.html');
 });
 
 /* GET entire data. */

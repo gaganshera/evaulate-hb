@@ -77,33 +77,33 @@ pipeline {
             }
         }
 
-        // stage('Containers') {
-            // parallel {
-                // stage('Pre-Container Check') {
-                //     when {
-                //         expression {
-                //             return sh (script: "docker port c-${username}-${env.BRANCH_NAME}", returnStatus: true) == 0;
-                //         }
-                //     }
-                //     steps {
-                //         echo 'Stopping the already running container'
-                //         sh "docker rm -f c-${username}-${env.BRANCH_NAME}"
-                //     }
-                // }
+        stage('Containers') {
+            parallel {
+                stage('Pre-Container Check') {
+                    when {
+                        expression {
+                            return sh (script: "docker port c-${username}-${env.BRANCH_NAME}", returnStatus: true) == 0;
+                        }
+                    }
+                    steps {
+                        echo 'Stopping the already running container'
+                        sh "docker rm -f c-${username}-${env.BRANCH_NAME}"
+                    }
+                }
 
                 stage('Publish to Docker Hub') {
                     steps {
                         sh "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
                         sh "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:latest"
                         
-                        withDockerRegistry([credentialsId: 'DockerHub', toolName: 'docker']) {
+                        withDockerRegistry(credentialsId: 'DockerHub', toolName: 'docker') {
                             sh "docker push ${dockerRegistry}:${BUILD_NUMBER}"
                             sh "docker push ${dockerRegistry}:latest"
                         }
                     }
                 }
-            // }
-        // }
+            }
+        }
 
         stage('Docker deployment') {
             steps {

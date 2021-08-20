@@ -95,10 +95,11 @@ pipeline {
                     steps {
                         sh "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
                         sh "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:latest"
-                        
-                        withDockerRegistry(credentialsId: 'DockerHub', toolName: 'docker') {
-                            sh "docker push ${dockerRegistry}:${BUILD_NUMBER}"
-                            sh "docker push ${dockerRegistry}:latest"
+                        script {
+                            withDockerRegistry(credentialsId: 'DockerHub', toolName: 'docker') {
+                                sh "docker push ${dockerRegistry}:${BUILD_NUMBER}"
+                                sh "docker push ${dockerRegistry}:latest"
+                            }
                         }
                     }
                 }

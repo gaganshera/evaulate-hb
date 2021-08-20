@@ -125,13 +125,12 @@ pipeline {
             steps {
                 script {
                     echo "Kubernetes Deployment"
-                    if (env.BRANCH_NAME == 'master') {
-                        powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$masterAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$masterServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$masterExposedPort\"} | set-content deployment.yaml"
-                    } 
-                    else if (env.BRANCH_NAME == 'develop') {
-                        powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment.yaml"
-                    }
-                
+                    // if (env.BRANCH_NAME == 'master') {
+                    //     powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$masterAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$masterServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$masterExposedPort\"} | set-content deployment.yaml"
+                    // } 
+                    // else if (env.BRANCH_NAME == 'develop') {
+                    //     powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment.yaml"
+                    // }
                     sh "kubectl apply -f deployment.yaml" 
                 }
                 

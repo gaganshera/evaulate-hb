@@ -43,7 +43,7 @@ pipeline {
         stage('Build') {
             steps {
                     checkout scm
-                    bat 'npm install .'
+                    sh 'npm install .'
             }
         }
         
@@ -52,7 +52,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                   bat 'npm test'
+                   sh 'npm test'
                 
             }
         }
@@ -62,17 +62,17 @@ pipeline {
                 branch 'develop'
             }
             steps {
-                    bat 'npm test'
+                    sh 'npm test'
                     
                     withSonarQubeEnv('Test_Sonar') {
-                    bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonar-himanshubungla -Dsonar.projectName=sonar-himanshubungla -Dsonar.language=js -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=tests/** -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info"
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonar-himanshubungla -Dsonar.projectName=sonar-himanshubungla -Dsonar.language=js -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=tests/** -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info"
                 } 
             }
         }
 
         stage('Docker image') {
             steps {
-                bat "docker build . -t i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER}"
+                sh "docker build . -t i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER}"
             }
         }
 
@@ -81,23 +81,23 @@ pipeline {
                 stage('Pre-Container Check') {
                     when {
                         expression {
-                            return bat (script: "docker port c-${username}-${env.BRANCH_NAME}", returnStatus: true) == 0;
+                            return sh (script: "docker port c-${username}-${env.BRANCH_NAME}", returnStatus: true) == 0;
                         }
                     }
                     steps {
                         echo 'Stopping the already running container'
-                        bat "docker rm -f c-${username}-${env.BRANCH_NAME}"
+                        sh "docker rm -f c-${username}-${env.BRANCH_NAME}"
                     }
                 }
 
                 stage('Publish to Docker Hub') {
                     steps {
-                        bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
-                        bat "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:latest"
+                        sh "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:${BUILD_NUMBER}"
+                        sh "docker tag i-${username}-${env.BRANCH_NAME}:${BUILD_NUMBER} ${dockerRegistry}:latest"
                         
                         withDockerRegistry([credentialsId: 'DockerHub', url: '']) {
-                            bat "docker push ${dockerRegistry}:${BUILD_NUMBER}"
-                            bat "docker push ${dockerRegistry}:latest"
+                            sh "docker push ${dockerRegistry}:${BUILD_NUMBER}"
+                            sh "docker push ${dockerRegistry}:latest"
                         }
                     }
                 }
@@ -109,10 +109,10 @@ pipeline {
                 script {
                     echo 'Starting the api container'
                     if (env.BRANCH_NAME == 'master') {
-                        bat "docker run --name c-${username}-${env.BRANCH_NAME} -p ${masterAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"    
+                        sh "docker run --name c-${username}-${env.BRANCH_NAME} -p ${masterAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"    
                     }
                     else if (env.BRANCH_NAME == 'develop') {
-                        bat "docker run --name c-${username}-${env.BRANCH_NAME} -p ${developAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"
+                        sh "docker run --name c-${username}-${env.BRANCH_NAME} -p ${developAppPort}:${dockerPort} -d ${dockerRegistry}:${BUILD_NUMBER}"
                     }
                 }
             }
@@ -129,7 +129,7 @@ pipeline {
                         powershell "(get-content deployment.yaml) | %{\$_ -replace \"<APP_NAME>\", \"$developAppName\"} | %{\$_ -replace \"<SERVICE_NAME>\", \"$developServiceName\"} | %{\$_ -replace \"<EXPOSED_PORT>\", \"$developExposedPort\"} | set-content deployment.yaml"
                     }
                 
-                    bat "kubectl apply -f deployment.yaml" 
+                    sh "kubectl apply -f deployment.yaml" 
                 }
                 
             }

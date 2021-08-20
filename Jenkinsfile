@@ -19,6 +19,7 @@ pipeline {
     
     tools {
         nodejs "nodejs"
+        dockerTool 'docker'
     }
     
     options {

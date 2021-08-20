@@ -18,7 +18,7 @@ pipeline {
     }
     
     tools {
-        nodejs "node"
+        nodejs "nodejs"
     }
     
     options {
